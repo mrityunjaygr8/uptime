@@ -1,0 +1,30 @@
+# https://taskfile.dev
+
+version: "3"
+
+dotenv: [".env"]
+
+tasks:
+  dev:
+    cmds:
+      - air
+    silent: true
+
+  sqlc-generate:
+    cmds:
+      - migrate -database $DB_URL -path db/migrations/ down -all
+  migrate-create:
+    cmds:
+      - migrate create -ext sql -dir db/migrations {{.CLI_ARGS}}
+
+  migrate-up:
+    cmds:
+      - migrate -database $DB_URL -path db/migrations/ up {{.CLI_ARGS}}
+
+  migrate-down:
+    cmds:
+      - migrate -database $DB_URL -path db/migrations/ down {{.CLI_ARGS}}
+
+  migrate-down-all:
+    cmds:
+      - migrate -database $DB_URL -path db/migrations/ down -all
