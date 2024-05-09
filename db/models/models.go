@@ -4,7 +4,12 @@
 
 package models
 
+import (
+	"github.com/jackc/pgx/v5/pgtype"
+)
+
 type Site struct {
-	ID  int64
-	Url string
+	ID        int64
+	Url       string
+	CreatedAt pgtype.Timestamptz
 }

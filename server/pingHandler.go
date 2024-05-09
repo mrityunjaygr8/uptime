@@ -8,7 +8,7 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-func handlePing(logger *slog.Logger) http.Handler {
+func handlePing(logger *slog.Logger) http.HandlerFunc {
 	type response struct {
 		Up bool `json:"up"`
 	}

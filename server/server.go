@@ -5,13 +5,14 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/jackc/pgx/v5"
 	"github.com/urfave/negroni"
 )
 
-func NewServer(logger *slog.Logger) http.Handler {
+func NewServer(logger *slog.Logger, db *pgx.Conn) http.Handler {
 	mux := chi.NewMux()
 
-	addRoutes(mux, logger)
+	addRoutes(mux, logger, db)
 
 	n := negroni.Classic()
 	n.UseHandler(mux)

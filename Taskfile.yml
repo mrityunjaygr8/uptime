@@ -12,7 +12,7 @@ tasks:
 
   sqlc-generate:
     cmds:
-      - migrate -database $DB_URL -path db/migrations/ down -all
+      - sqlc generate
   migrate-create:
     cmds:
       - migrate create -ext sql -dir db/migrations {{.CLI_ARGS}}

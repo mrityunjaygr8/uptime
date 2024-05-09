@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-func handlePingPong(logger *slog.Logger) http.Handler {
+func handlePingPong(logger *slog.Logger) http.HandlerFunc {
 	type response struct {
 		Response string `json:"response"`
 	}

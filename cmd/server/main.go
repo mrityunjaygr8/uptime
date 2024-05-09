@@ -11,12 +11,19 @@ import (
 	"sync"
 	"time"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/mrityunjaygr8/uptime/server"
 )
 
 func run(ctx context.Context, w io.Writer, args []string) error {
 	logger := slog.New(slog.NewTextHandler(w, nil))
-	srv := server.NewServer(logger)
+	dbURL := os.Getenv("DB_URL")
+	db, err := pgx.Connect(ctx, dbURL)
+	if err != nil {
+		logger.Error("Error connecting to db", "msg", err)
+	}
+	defer db.Close(ctx)
+	srv := server.NewServer(logger, db)
 
 	httpServer := &http.Server{
 		Addr:    net.JoinHostPort("localhost", "3000"),

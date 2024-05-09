@@ -9,8 +9,24 @@ import (
 	"context"
 )
 
+const createSite = `-- name: CreateSite :one
+INSERT INTO sites (
+  url
+) VALUES (
+  $1
+)
+RETURNING id, url, created_at
+`
+
+func (q *Queries) CreateSite(ctx context.Context, url string) (Site, error) {
+	row := q.db.QueryRow(ctx, createSite, url)
+	var i Site
+	err := row.Scan(&i.ID, &i.Url, &i.CreatedAt)
+	return i, err
+}
+
 const listSites = `-- name: ListSites :many
-SELECT id, url FROM SITES
+SELECT id, url, created_at FROM sites
 ORDER BY id
 `
 
@@ -23,7 +39,7 @@ func (q *Queries) ListSites(ctx context.Context) ([]Site, error) {
 	var items []Site
 	for rows.Next() {
 		var i Site
-		if err := rows.Scan(&i.ID, &i.Url); err != nil {
+		if err := rows.Scan(&i.ID, &i.Url, &i.CreatedAt); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
