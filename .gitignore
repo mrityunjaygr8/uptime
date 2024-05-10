@@ -26,3 +26,4 @@ devenv.local.nix
 # Go workspace file
 go.work
 tmp
+.direnv
