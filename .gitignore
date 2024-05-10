@@ -1,4 +1,5 @@
 
+.env
 # Devenv
 .devenv*
 devenv.local.nix
@@ -24,3 +25,4 @@ devenv.local.nix
 
 # Go workspace file
 go.work
+tmp
