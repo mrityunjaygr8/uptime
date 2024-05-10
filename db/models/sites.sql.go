@@ -7,6 +7,8 @@ package models
 
 import (
 	"context"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const createSite = `-- name: CreateSite :one
@@ -26,20 +28,39 @@ func (q *Queries) CreateSite(ctx context.Context, url string) (Site, error) {
 }
 
 const listSites = `-- name: ListSites :many
-SELECT id, url, created_at FROM sites
+SELECT id, url, created_at, count(*) OVER() AS full_count
+FROM sites
 ORDER BY id
+LIMIT $2::int OFFSET $1::int
 `
 
-func (q *Queries) ListSites(ctx context.Context) ([]Site, error) {
-	rows, err := q.db.Query(ctx, listSites)
+type ListSitesParams struct {
+	PageOffset int32
+	PageSize   int32
+}
+
+type ListSitesRow struct {
+	ID        int64
+	Url       string
+	CreatedAt pgtype.Timestamptz
+	FullCount int64
+}
+
+func (q *Queries) ListSites(ctx context.Context, arg ListSitesParams) ([]ListSitesRow, error) {
+	rows, err := q.db.Query(ctx, listSites, arg.PageOffset, arg.PageSize)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Site
+	var items []ListSitesRow
 	for rows.Next() {
-		var i Site
-		if err := rows.Scan(&i.ID, &i.Url, &i.CreatedAt); err != nil {
+		var i ListSitesRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Url,
+			&i.CreatedAt,
+			&i.FullCount,
+		); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
